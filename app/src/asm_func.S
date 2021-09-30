@@ -7,6 +7,7 @@
 .global asm_svc
 .global asm_zeros
 .global asm_escalar32
+.global asm_escalar16
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
@@ -65,7 +66,7 @@
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
-@ void asm_productoEscalar32 (uint32_t * vectorIn, uint32_t * vectorOut, uint32_t indice, uint32_t factor);
+@ void asm_escalar32 (uint32_t * vectorIn, uint32_t * vectorOut, uint32_t indice, uint32_t factor);
 @
 @ Parametros recibidos:
 @   r0: *Entrada
@@ -77,6 +78,28 @@
 	asm_escalar32:
 		push	{r4-r5}			@ Salvo los registros que no se guardan automaticamente (calling conv)
 	.loopEj2:
+		ldr		r5, [r0], 4		@ recorro el vector de entrada con r5
+		mul		r4, r5, r3		@ cargo en r4 el producto de r5 y r3
+		str		r4, [r1], 4		@ guardo el resultado en [r1] e incremento en 4
+		subs	r2, 1			@ actualizo indice y flags
+		bne		.loopEj2		@ vuelve a loopEj2 hasta r2 = 0
+		pop		{r4-r5}			@ Repongo los registros no automáticos
+		bx		lr				@ retorno al punto de llamada
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@ void asm_escalar16 (uint32_t * vectorIn, uint32_t * vectorOut, uint32_t indice, uint32_t factor);
+@
+@ Parametros recibidos:
+@   r0: *Entrada
+@   r1: *Resultado
+@	r2: indice
+@	r3: factor
+@
+.thumb_func
+	asm_escalar16:
+		push	{r4-r5}			@ Salvo los registros que no se guardan automaticamente (calling conv)
+	.loopEj3:
 		ldr		r5, [r0], 4		@ recorro el vector de entrada con r5
 		mul		r4, r5, r3		@ cargo en r4 el producto de r5 y r3
 		str		r4, [r1], 4		@ guardo el resultado en [r1] e incremento en 4
