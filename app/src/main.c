@@ -6,13 +6,17 @@
 #include <stdnoreturn.h>
 
 // descomentar el ejercicio con el que se va a trabajar
-//#define EJERCICIO_0
+#define EJERCICIO_0
 //#define EJERCICIO_1
-#define EJERCICIO_2
+//#define EJERCICIO_2
 
 // Variable que se incrementa cada vez que se llama al handler de interrupcion
 // del SYSTICK.
 static volatile uint32_t s_ticks = 0;
+
+// Contador de ciclos del sistema
+static volatile uint32_t * H_DWT_CYCCNT	 = (uint32_t *)0xE0001004;
+    
 
 
 // Inicia soporte de la placa y periodo de la interrupcion del SYSTICK
@@ -22,6 +26,13 @@ static void Inicio (void)
     Board_Init ();
     SystemCoreClockUpdate ();
     SysTick_Config (SystemCoreClock / 1000);
+    //Inicializo la cuenta de ciclos
+    static uint32_t * H_DWT_DEMCR	 = (uint32_t *)0xE000EDFC; 
+    static uint32_t * H_DWT_CTRL	 = (uint32_t *)0xE0001000;
+    // bit24[TRCENA]   = habilita todos los DWT
+	*H_DWT_DEMCR |= 1<<24;
+	// bit0[CYCCNTENA] =  enable CYCCNT
+	*H_DWT_CTRL |= 1;
 }
 
 
@@ -35,11 +46,22 @@ void SysTick_Handler (void)
 
 static void Suma (void)
 {
+    uint32_t cyclesC, cyclesAsm;
+	
+	// carga los uS a esperar
+	//t *= (SystemCoreClock/1000000);
+	// chequea si el contador alcanzó la cuenta
+	//while(*H_DWT_CYCCNT < t);
+    
     const uint32_t A = 20;
     const uint32_t B = 30;
 
+    *H_DWT_CYCCNT = 0;
     const uint32_t SumResult_C = c_sum (A, B);
+    cyclesC = *H_DWT_CYCCNT;
+    *H_DWT_CYCCNT = 0;
     const uint32_t SumResult_Asm = asm_sum (A, B);
+    cyclesAsm = *H_DWT_CYCCNT;
 
     // Actividad de debug: SumResult_C y SumResult_Asm deberian contener el
     // mismo valor.
