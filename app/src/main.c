@@ -8,7 +8,8 @@
 // descomentar el ejercicio con el que se va a trabajar
 //#define EJERCICIO_0
 //#define EJERCICIO_1
-#define EJERCICIO_2
+//#define EJERCICIO_2
+#define EJERCICIO_3
 
 // Variable que se incrementa cada vez que se llama al handler de interrupcion
 // del SYSTICK.
@@ -110,6 +111,27 @@ static void productoEscalar32 (void)
     cyclesAsm = *H_DWT_CYCCNT;
 
 }
+
+static void productoEscalar16 (void)
+{
+	volatile uint32_t cyclesC, cyclesAsm;
+    
+    static uint16_t Entrada[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+	static uint16_t Resultado[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	static uint32_t cantidad = sizeof(Entrada) / sizeof(uint16_t);
+    static uint32_t factor = 2;
+
+	
+    *H_DWT_CYCCNT = 0;
+    escalar16(Entrada, Resultado, cantidad, factor);
+    cyclesC = *H_DWT_CYCCNT;
+
+    *H_DWT_CYCCNT = 0;
+    asm_escalar16(Entrada, Resultado, cantidad, factor);
+    cyclesAsm = *H_DWT_CYCCNT;
+
+}
+
 
 
 static void LlamandoAMalloc (void)
@@ -227,6 +249,12 @@ int main (void)
 #ifdef EJERCICIO_2
 
     productoEscalar32 ();
+
+#endif
+
+#ifdef EJERCICIO_3
+
+    productoEscalar16 ();
 
 #endif
    

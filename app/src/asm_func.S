@@ -83,8 +83,8 @@
 		str		r4, [r1], 4		@ guardo el resultado en [r1] e incremento en 4
 		subs	r2, 1			@ actualizo indice y flags
 		bne		.loopEj2		@ vuelve a loopEj2 hasta r2 = 0
-		pop		{r4-r5}			@ Repongo los registros no automáticos
-		bx		lr				@ retorno al punto de llamada
+	pop		{r4-r5}				@ Repongo los registros no automáticos
+	bx		lr					@ retorno al punto de llamada
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
@@ -100,10 +100,10 @@
 	asm_escalar16:
 		push	{r4-r5}			@ Salvo los registros que no se guardan automaticamente (calling conv)
 	.loopEj3:
-		ldr		r5, [r0], 4		@ recorro el vector de entrada con r5
+		ldrh	r5, [r0], 4		@ recorro el vector de entrada con r5
 		mul		r4, r5, r3		@ cargo en r4 el producto de r5 y r3
-		str		r4, [r1], 4		@ guardo el resultado en [r1] e incremento en 4
+		strh	r4, [r1], 4		@ guardo el resultado en [r1] e incremento en 4
 		subs	r2, 1			@ actualizo indice y flags
-		bne		.loopEj2		@ vuelve a loopEj2 hasta r2 = 0
-		pop		{r4-r5}			@ Repongo los registros no automáticos
-		bx		lr				@ retorno al punto de llamada
+		bne		.loopEj3		@ vuelve a loopEj2 hasta r2 = 0
+	pop		{r4-r5}				@ Repongo los registros no automáticos
+	bx		lr					@ retorno al punto de llamada
