@@ -9,6 +9,7 @@
 .global asm_escalar32
 .global asm_escalar16
 .global asm_escalarSat12
+.global asm_filtroVentana
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
@@ -111,7 +112,7 @@
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
-@ void asm_escalarSat16 (uint32_t * vectorIn, uint32_t * vectorOut, uint32_t indice, uint32_t factor);
+@ void asm_escalarSat12 (uint32_t * vectorIn, uint32_t * vectorOut, uint32_t indice, uint32_t factor);
 @
 @ Parametros recibidos:
 @   r0: *Entrada
@@ -130,4 +131,38 @@
 		subs	r2, 1			@ actualizo indice y flags
 		bne		.loopEj4		@ vuelve a loopEj2 hasta r2 = 0
 	pop		{r4-r5}				@ Repongo los registros no automáticos
+	bx		lr					@ retorno al punto de llamada
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@ void asm_filtroVentana (uint32_t * vectorIn, uint32_t * vectorOut, uint32_t ventana, uint32_t);
+@
+@ Parametros recibidos:
+@   r0: *Entrada
+@   r1: *Resultado
+@	r2: Ventana
+@
+.thumb_func
+	asm_filtroVentana:
+		push	{r4-r9}			@ Salvo los registros que voy a utilizar: R4-> contador
+		mov 	r3, 1000		@ R5 -> acumulador, R6-> dir del valor a sumar, R7-> dir del valor a restar
+		mov 	r9, r2						
+	.prepEj5:
+		ldr		r4, [r0], 4		@ recorro el vector de entrada con r4
+		add		r5, r4	 		@ sumo r4 al acumulador
+		sub 	r3, 1			
+		subs	r2, 1			@ chequeo si ya se agoto la ventana
+		bne		.prepEj5		@ 
+		udiv 	r8, r5, r9		@ sume los diez primeros valores, ahora divido por 10
+		str		r8, [r1], 4 	@ y guardo en la primer posición de salida
+	.loopEj5:
+		ldr		r4, [r0], 4		@ igual que en el 1er loop, cargo el valor a sumar (i - esimo)
+		add		r5, r4			@ sumo al acumulador
+		ldr		r4, [r0 , -44]	@ cargo el valor a restar (i-10 esimo)
+		sub		r5, r4			@ resto al acumulador
+		udiv 	r8, r5, r9		@ calculo la media
+		str		r8, [r1], 4		@ escribo en el vector de salida
+		subs	r3, 1
+		bne		.loopEj5 
+	pop		{r4-r9}				@ Repongo los registros no automáticos
 	bx		lr					@ retorno al punto de llamada

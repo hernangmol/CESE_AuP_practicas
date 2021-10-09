@@ -7,7 +7,7 @@
 
 // definir el ejercicio con el que se va a trabajar
 
-#define EJERCICIO_2
+#define EJERCICIO_5
 
 // Variable que se incrementa cada vez que se llama al handler de interrupcion
 // del SYSTICK.
@@ -150,6 +150,43 @@ static void productoEscalarSat12 (void)
 
 }
 
+static void filtroVentana (void)
+{
+	volatile uint32_t cyclesC, cyclesAsm;
+    uint32_t i = 0;
+    uint32_t j = 0;
+
+    static uint32_t Entrada[1000];
+	static uint32_t Salida[1000];
+    static uint32_t ventana = 10;
+	
+    // cargo el vector de entrada con una señal diente de sierra
+    for (i=0;i<1000;i++)
+    {
+        Entrada[i]=j;
+        if(j++ == 20)
+            j = 0;
+    }
+    
+    __BKPT (0);
+	*H_DWT_CYCCNT = 0;
+    C_filtroVentana(Entrada, Salida, ventana);
+    __BKPT (0);
+    cyclesC = *H_DWT_CYCCNT;
+
+    for (i=0;i<1000;i++)
+    {
+        Salida[i]=0;
+    }
+
+    __BKPT (0);
+    *H_DWT_CYCCNT = 0;
+    asm_filtroVentana(Entrada, Salida, ventana);
+    __BKPT (0);
+    cyclesAsm = *H_DWT_CYCCNT;
+
+}
+
 
 
 static void LlamandoAMalloc (void)
@@ -279,6 +316,12 @@ int main (void)
 #ifdef EJERCICIO_4
 
     productoEscalarSat12 ();
+
+#endif
+
+#ifdef EJERCICIO_5
+
+    filtroVentana ();
 
 #endif
    

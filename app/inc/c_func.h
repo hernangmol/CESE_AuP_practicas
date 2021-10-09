@@ -12,3 +12,5 @@ void escalar32(uint32_t *,uint32_t *, uint32_t , uint32_t );
 void escalar16(uint16_t *,uint16_t *, uint32_t , uint32_t );
 
 void escalarSat12(uint16_t *,uint16_t *, uint32_t , uint32_t );
+
+void C_filtroVentana(uint32_t *,uint32_t *, uint32_t );
