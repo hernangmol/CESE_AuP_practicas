@@ -6,8 +6,8 @@
 #include <stdnoreturn.h>
 
 // descomentar el ejercicio con el que se va a trabajar
-#define EJERCICIO_0
-//#define EJERCICIO_1
+//#define EJERCICIO_0
+#define EJERCICIO_1
 //#define EJERCICIO_2
 
 // Variable que se incrementa cada vez que se llama al handler de interrupcion
@@ -46,7 +46,7 @@ void SysTick_Handler (void)
 
 static void Suma (void)
 {
-    uint32_t cyclesC, cyclesAsm;
+    volatile uint32_t cyclesC, cyclesAsm;
 	
 	// carga los uS a esperar
 	//t *= (SystemCoreClock/1000000);
@@ -73,15 +73,22 @@ static void Suma (void)
 
 static void zeros (void)
 {
-	 __BKPT (0);
+    volatile uint32_t cyclesC, cyclesAsm;
      
-     uint32_t vector[8] = { (uint32_t)-1, (uint32_t)-2, (uint32_t)-3,
+    uint32_t vector[8] = { (uint32_t)-1, (uint32_t)-2, (uint32_t)-3,
 						   (uint32_t)-4, (uint32_t)-5, (uint32_t)-6,
 						   (uint32_t)-7, (uint32_t)-8 };
 
-     asm_zeros (vector, 8);
+    __BKPT (0);
 
+    *H_DWT_CYCCNT = 0;
+    c_zeros(vector, 8);
+    cyclesC = *H_DWT_CYCCNT;
 
+    *H_DWT_CYCCNT = 0;
+    asm_zeros (vector, 8);
+    cyclesAsm = *H_DWT_CYCCNT;
+    
 }
 
 static void productoEscalar32 (void)
