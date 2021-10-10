@@ -10,6 +10,7 @@
 .global asm_escalar16
 .global asm_escalarSat12
 .global asm_filtroVentana
+.global asm_pack16
 .global asm_posMax
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -170,6 +171,25 @@
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
+@ void asm_packet16 (int32_t * vectorIn, int16_t * vectorOut, uint32_t longitud);
+@
+@ Parametros recibidos:
+@   r0: *Entrada
+@   r1: *Salida
+@	r2: longitud
+@
+.thumb_func
+	asm_pack16:
+		add r0, 2	
+	.loopEj6:
+		ldrh	r3, [r0], 4		@ recorro el vector de entrada con r3
+		strh	r3, [r1], 2		@ guardo el resultado en [r1] e incremento en 2
+		subs	r2, 1			@ decremento contador
+		bne		.loopEj6		@ vuelve a loopEj6 hasta que r2 = 0
+	bx		lr					@ retorno al punto de llamada
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
 @ void asm_posMax (uint32_t * vectorIn, uint32_t largo);
 @
 @ Parametros recibidos:
@@ -178,7 +198,7 @@
 @
 .thumb_func
 	asm_posMax:
-		push	{r4-r5}				@ Salvo los registros que no se guardan automaticamente (calling conv)
+		push	{r4-r5}			@ Salvo los registros que no se guardan automaticamente (calling conv)
 		ldr		r3, [r0]		@ r3 almacena el maximo, se carga con el primer valor
 		mov 	r4, 0			@ r4 recorre el vector de modo creciente
 	.loopEj7:

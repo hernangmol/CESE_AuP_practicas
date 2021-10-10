@@ -15,4 +15,6 @@ void escalarSat12(uint16_t *,uint16_t *, uint32_t , uint32_t );
 
 void C_filtroVentana(uint32_t *,uint32_t *, uint32_t );
 
+void C_pack16(int32_t *, int16_t *, uint32_t );
+
 uint32_t C_posMax(int32_t * , uint32_t );

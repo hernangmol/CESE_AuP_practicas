@@ -56,6 +56,16 @@ void C_filtroVentana(uint32_t *vectorIn, uint32_t *vectorOut, uint32_t ventana)
 		
 }
 
+void C_pack16(int32_t * Entrada, int16_t * Salida, uint32_t longitud)
+{
+	uint32_t i;
+
+	for (i = 0; i < longitud; i++)
+    {
+        Salida[i] = (int16_t)(Entrada[i]>>16);
+    }
+}
+
 uint32_t C_posMax(int32_t * Entrada, uint32_t cantidad)
 {
 	uint32_t posMaximo = 0;

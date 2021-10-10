@@ -42,6 +42,12 @@ Prácticas:
 
     ciclos en asm:   15225 
 
+. Ejercicio 6 - Empaquetador
+
+    ciclos en C :   3054  
+
+    ciclos en asm:   523 
+
 . Ejercicio 7 - Máximo
 
     ciclos en C :   2923  
