@@ -12,6 +12,7 @@
 .global asm_filtroVentana
 .global asm_pack16
 .global asm_posMax
+.global asm_invertir
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
@@ -213,4 +214,33 @@
 		bne		.loopEj7
 	mov r0, r5					@ prepara el valor de retorno
 	pop		{r4-r5}				@ Repongo los registros no automáticos
+	bx		lr					@ retorno al punto de llamada
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@ void asm_invertir(int16_t * vector, uint32_t longitud );
+@
+@ Parametros recibidos:
+@   r0: *vector
+@   r1: largo del vector
+@
+@ Registros usados:
+@	r0: recorre en forma ascendente
+@ 	r2: memoria auxiliar para swapping
+@ 	r3: recorre en forma descendente
+@ 	r4: auxiliar  
+.thumb_func
+	asm_invertir:
+	@push	r4				@ Salvo los registros no automaticos (ToDo - falla si descomento)
+		mov		r3, r0 			@ seteo r3 al pricipio
+		add 	r3, 200			@ llevo al final (TODO sacar numero magico, depende de longitud)
+	.loopEj9:
+		ldr		r2, [r0]		@ cargo vector[i] en aux e incremento
+		ldr		r4, [r3]
+		str		r4, [r0]		@ cargo vector[longitud-1 -i] en vector[i]
+		str		r2, [r3], -2	@ cargo aux en vector[longitud-1 -i] y decremento
+		add		r0, 2
+		subs	r1, 2			@ actualizo contador (recorro solo la mitad)
+		bne		.loopEj9
+	@pop		r4				@ Repongo los registros no automáticos (ToDo - falla si descomento)
 	bx		lr					@ retorno al punto de llamada

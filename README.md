@@ -54,4 +54,10 @@ Prácticas:
 
     ciclos en asm:   958 
 
+. Ejercicio 9 - Invertir
+
+    ciclos en C :   2825  
+
+    ciclos en asm:   555 
+
 

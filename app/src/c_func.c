@@ -82,3 +82,16 @@ uint32_t C_posMax(int32_t * Entrada, uint32_t cantidad)
 	}
 	return(posMaximo);
 }
+
+void C_invertir(int16_t * vector, uint32_t longitud)
+{
+	uint32_t i;
+	int16_t aux;
+	
+	for (i = 0; i < longitud/2; i++)
+    {
+        aux = vector[i];
+		vector[i] = vector[longitud-1-i];
+		vector[longitud-1-i] = aux;
+	}
+}

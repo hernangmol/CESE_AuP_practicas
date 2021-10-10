@@ -7,7 +7,7 @@
 
 // definir el ejercicio con el que se va a trabajar
 
-#define EJERCICIO_6
+#define EJERCICIO_9
 
 // Variable que se incrementa cada vez que se llama al handler de interrupcion
 // del SYSTICK.
@@ -245,6 +245,34 @@ static void posicionMaximo (void)
 
 }
 
+static void invertir (void)
+{
+	volatile uint32_t cyclesC, cyclesAsm;
+    uint32_t i;
+    
+    static int16_t vector[100];
+    static uint32_t cantidad = sizeof(vector) / sizeof(int16_t);
+
+    for (i=0;i<cantidad;i++)
+        vector[i]=i;
+                   	
+    __BKPT (0);
+    *H_DWT_CYCCNT = 0;
+    C_invertir(vector, cantidad);
+     __BKPT (0);
+    cyclesC = *H_DWT_CYCCNT;
+
+    for (i=0;i<cantidad;i++)
+        vector[i]=i;
+
+    __BKPT (0);
+    *H_DWT_CYCCNT = 0;
+    asm_invertir(vector, cantidad);
+     __BKPT (0);
+    cyclesAsm = *H_DWT_CYCCNT;
+
+}
+
 
 
 static void LlamandoAMalloc (void)
@@ -392,6 +420,12 @@ int main (void)
 #ifdef EJERCICIO_7
 
     posicionMaximo();
+
+#endif
+
+#ifdef EJERCICIO_9
+
+    invertir();
 
 #endif
    

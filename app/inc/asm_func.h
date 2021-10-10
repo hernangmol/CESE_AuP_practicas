@@ -19,3 +19,5 @@ extern void asm_pack16 (int32_t * , int16_t * , uint32_t );
 extern void asm_posMax (uint32_t * , uint32_t );
 
 extern void asm_svc (void);
+
+extern void asm_invertir(int16_t * , uint32_t );
