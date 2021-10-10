@@ -55,3 +55,20 @@ void C_filtroVentana(uint32_t *vectorIn, uint32_t *vectorOut, uint32_t ventana)
 	}
 		
 }
+
+uint32_t C_posMax(int32_t * Entrada, uint32_t cantidad)
+{
+	uint32_t posMaximo = 0;
+	uint32_t valMaximo = Entrada[0];
+	uint32_t i;
+
+	for (i=0;i<cantidad;i++)
+	{
+		if(Entrada[i]>valMaximo)
+		{
+			valMaximo = Entrada[i];
+			posMaximo = i;
+		}
+	}
+	return(posMaximo);
+}

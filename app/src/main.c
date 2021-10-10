@@ -7,7 +7,7 @@
 
 // definir el ejercicio con el que se va a trabajar
 
-#define EJERCICIO_5
+#define EJERCICIO_7
 
 // Variable que se incrementa cada vez que se llama al handler de interrupcion
 // del SYSTICK.
@@ -187,6 +187,34 @@ static void filtroVentana (void)
 
 }
 
+static void posicionMaximo (void)
+{
+	volatile uint32_t cyclesC, cyclesAsm;
+    uint32_t i,j = 0;
+    
+    static uint32_t Entrada[100];
+	static uint32_t cantidad = sizeof(Entrada) / sizeof(int32_t);
+
+    for (i=0;i<cantidad;i++)
+    {
+        Entrada[i]=j;
+        if(j++ == 20)
+            j = 0;
+    }
+   	
+    __BKPT (0);
+    *H_DWT_CYCCNT = 0;
+    C_posMax(Entrada, cantidad);
+     __BKPT (0);
+    cyclesC = *H_DWT_CYCCNT;
+
+    *H_DWT_CYCCNT = 0;
+    asm_posMax(Entrada, cantidad);
+     __BKPT (0);
+    cyclesAsm = *H_DWT_CYCCNT;
+
+}
+
 
 
 static void LlamandoAMalloc (void)
@@ -322,6 +350,12 @@ int main (void)
 #ifdef EJERCICIO_5
 
     filtroVentana ();
+
+#endif
+
+#ifdef EJERCICIO_7
+
+    posicionMaximo();
 
 #endif
    

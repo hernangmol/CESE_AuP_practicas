@@ -10,6 +10,7 @@
 .global asm_escalar16
 .global asm_escalarSat12
 .global asm_filtroVentana
+.global asm_posMax
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
@@ -165,4 +166,31 @@
 		subs	r3, 1
 		bne		.loopEj5 
 	pop		{r4-r9}				@ Repongo los registros no automáticos
+	bx		lr					@ retorno al punto de llamada
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@ void asm_posMax (uint32_t * vectorIn, uint32_t largo);
+@
+@ Parametros recibidos:
+@   r0: *Entrada
+@   r1: largo del vector
+@
+.thumb_func
+	asm_posMax:
+		push	{r4-r5}				@ Salvo los registros que no se guardan automaticamente (calling conv)
+		ldr		r3, [r0]		@ r3 almacena el maximo, se carga con el primer valor
+		mov 	r4, 0			@ r4 recorre el vector de modo creciente
+	.loopEj7:
+		ldr		r2, [r0], 4		@ recorro el vector de entrada con r2
+		cmp		r2, r3 			@ r3 almacena el valor maximo
+		bmi		.negativo
+		mov		r3, r2			@ almacena el nuevo máximo
+		mov		r5, r4			@ r5 almacena la posición
+	.negativo:
+		add 	r4, 1
+		subs	r1, 1			@ actualizo indice y flags
+		bne		.loopEj7
+	mov r0, r5					@ prepara el valor de retorno
+	pop		{r4-r5}				@ Repongo los registros no automáticos
 	bx		lr					@ retorno al punto de llamada
