@@ -13,6 +13,7 @@
 .global asm_pack16
 .global asm_posMax
 .global asm_invertir
+.global asm_filtroEco
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @ Prototipo en "C":
@@ -243,4 +244,29 @@
 		subs	r1, 2			@ actualizo contador (recorro solo la mitad)
 		bne		.loopEj9
 	@pop		r4				@ Repongo los registros no automáticos (ToDo - falla si descomento)
+	bx		lr					@ retorno al punto de llamada
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Prototipo en "C":
+@ void asm_filtroVentana (uint32_t * vectorIn, uint32_t * vectorOut, uint32_t ventana, uint32_t);
+@
+@ Parametros recibidos:
+@   r0: *Entrada
+@   r1: *Resultado
+@	r2: Ventana
+@
+.thumb_func
+	asm_filtroEco:
+		push	{r4-r9}			@ Salvo los registros que voy a utilizar: R4-> contador
+		mov 	r3, 9118		@ suponiendo 10000 muestras
+	.loopEjX:					@ este loo carga el eco
+		ldr		r4, [r0+9118], -4		@ 10000 - 882 = 9118
+		mov		[r1], r4	 	
+		subs 	r3, 1			
+		bne		.loopEjX		@ 
+	loop2ejX
+								@ hago otro loop que duplique el vector entrada
+
+		shadd16 				@ tercer loop  usando esta instrucción
+	pop		{r4-r9}				@ Repongo los registros no automáticos
 	bx		lr					@ retorno al punto de llamada
